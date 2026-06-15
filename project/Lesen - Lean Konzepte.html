@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lesen · Lean-Konzepte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper: oklch(0.992 0.003 95);
+    --panel: oklch(0.980 0.004 95);
+    --panel-2: oklch(0.966 0.005 92);
+    --ink: oklch(0.26 0.013 60);
+    --ink-soft: oklch(0.47 0.012 60);
+    --ink-faint: oklch(0.64 0.010 62);
+    --ink-ghost: oklch(0.80 0.006 70);
+    --line: oklch(0.905 0.004 80);
+    --line-soft: oklch(0.945 0.003 80);
+    --accent: oklch(0.52 0.105 250);
+    --accent-ink: oklch(0.45 0.11 250);
+    --accent-wash: oklch(0.52 0.105 250 / 0.10);
+    --accent-line: oklch(0.52 0.105 250 / 0.40);
+    --sans: 'Hanken Grotesk', system-ui, sans-serif;
+    --serif: 'Newsreader', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; height:100%; background: var(--paper); }
+  body{ font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  .mono{ font-family: var(--mono); font-feature-settings:"tnum" 1; letter-spacing:-0.01em; }
+
+  /* ---------- geteilter Zettel-Kopf ---------- */
+  .rd{ display:flex; flex-direction:column; height:100%; background:var(--paper); padding:38px 42px 34px; }
+  .cap{ font-size:12px; line-height:1.55; color:var(--ink-faint); margin:0 0 26px; max-width:560px; }
+  .cap b{ color:var(--ink); font-weight:600; }
+  .rd-meta{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink-faint); margin-bottom:18px; }
+  .rd-meta .addr{ font-family:var(--mono); font-weight:600; color:var(--ink); letter-spacing:-0.02em; }
+  .rd-meta .dot{ color:var(--ink-ghost); }
+  .rd-body{ font-family:var(--serif); font-size:22px; font-weight:400; line-height:1.5; color:var(--ink); margin:0; text-wrap:pretty; }
+  .rd-body .ref{ color:var(--accent-ink); border-bottom:1px solid var(--accent-line); }
+  .fn-sup{ font-family:var(--mono); font-size:0.6em; vertical-align:super; color:var(--accent-ink); font-weight:600; margin-left:1px; }
+  .rd-tags{ display:flex; gap:7px; margin-top:20px; }
+  .rd-tag{ font-size:12.5px; color:var(--ink-faint); background:var(--panel-2); padding:4px 11px; border-radius:999px; }
+
+  /* ---------- A · Stiller Apparat ---------- */
+  .aA-sep{ height:1px; background:var(--line-soft); margin:30px 0 18px; }
+  .aA-fn{ display:flex; gap:11px; align-items:baseline; font-size:14.5px; line-height:1.5; }
+  .aA-fn .n{ flex:0 0 auto; font-family:var(--mono); font-size:11px; color:var(--accent-ink); font-weight:600; }
+  .aA-q{ font-family:var(--serif); font-style:italic; color:var(--ink-soft); }
+  .aA-src{ color:var(--ink-faint); font-style:normal; font-size:12.5px; white-space:nowrap; }
+  .aA-link{ display:flex; align-items:center; gap:9px; margin-top:18px; font-size:14px; color:var(--ink-faint); white-space:nowrap; }
+  .aA-link .spark{ color:var(--ink-faint); flex:0 0 auto; }
+  .aA-link .to{ font-family:var(--mono); color:var(--accent-ink); font-weight:600; }
+  .aA-link .why{ color:var(--accent-ink); cursor:pointer; }
+  .aA-acts{ margin-left:auto; display:flex; gap:3px; }
+  .aA-ic{ width:27px; height:27px; border:none; background:transparent; color:var(--ink-ghost); border-radius:7px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:background .14s, color .14s; }
+  .aA-ic:hover{ background:var(--panel-2); color:var(--ink); }
+
+  /* ---------- B · Marginalien ---------- */
+  .aB{ display:grid; grid-template-columns:1fr 168px; gap:30px; }
+  .aB-marg{ display:flex; flex-direction:column; gap:24px; padding-top:38px; }
+  .mn{ display:flex; flex-direction:column; gap:3px; font-size:12px; line-height:1.46; color:var(--ink-faint); padding-left:13px; border-left:1px solid var(--line); }
+  .mn .n{ font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.02em; color:var(--accent-ink); text-transform:uppercase; margin-bottom:2px; }
+  .mn-q{ font-family:var(--serif); font-style:italic; color:var(--ink-soft); }
+  .mn-src{ font-size:11px; color:var(--ink-ghost); }
+  .mn-ki .mn-to{ font-family:var(--mono); color:var(--accent-ink); font-weight:600; font-size:11px; margin-top:1px; }
+  .mn-acts{ display:flex; align-items:center; gap:6px; margin-top:6px; }
+  .mn-acts button{ border:none; background:transparent; padding:0; font:inherit; font-size:11.5px; font-weight:600; color:var(--accent-ink); cursor:pointer; }
+  .mn-acts button.dim{ color:var(--ink-ghost); font-weight:500; }
+  .mn-acts .mn-mid{ color:var(--ink-ghost); }
+
+  /* ---------- C · Apparat-Leiste ---------- */
+  .aC{ margin-top:30px; border-top:1px solid var(--line); }
+  .aC-row{ display:grid; grid-template-columns:92px 1fr auto; gap:18px; align-items:baseline; padding:15px 2px; border-bottom:1px solid var(--line-soft); }
+  .aC-row:last-child{ border-bottom:none; }
+  .aC-lbl{ font-size:10px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); padding-top:2px; }
+  .aC-val{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .aC-q{ font-family:var(--serif); font-style:italic; font-size:15px; line-height:1.45; color:var(--ink-soft); }
+  .aC-src{ font-size:12px; color:var(--ink-faint); }
+  .aC-why{ color:var(--accent-ink); cursor:pointer; }
+  .aC-n{ font-size:12px; color:var(--ink-ghost); align-self:flex-start; }
+  .aC-acts{ display:flex; align-items:center; gap:4px; }
+  .aC-to{ font-size:12.5px; color:var(--accent-ink); font-weight:600; margin-right:4px; }
+  .aC-ic{ width:27px; height:27px; border:1px solid var(--line); background:var(--paper); color:var(--ink-faint); border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:border-color .14s, color .14s; }
+  .aC-ic:hover{ border-color:var(--accent-line); color:var(--accent-ink); }
+
+  /* ---------- D · Vermutung später ---------- */
+  .aD-bar{ display:flex; align-items:center; gap:12px; margin-top:30px; }
+  .aD-write{ display:inline-flex; align-items:center; gap:8px; height:38px; padding:0 17px; border-radius:999px; border:none; background:var(--ink); color:var(--paper); font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  .aD-chip{ display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 13px; border-radius:999px; border:1px solid var(--line); background:transparent; font:inherit; font-size:12.5px; font-weight:500; color:var(--ink-soft); cursor:pointer; }
+  .aD-chip svg{ color:var(--ink-faint); }
+  .aD-badge{ font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--accent-ink); background:var(--accent-wash); padding:2px 6px; border-radius:5px; }
+  .aD-pop{ margin-top:18px; align-self:flex-start; width:330px; background:var(--paper); border:1px solid var(--line); border-radius:12px; box-shadow:0 18px 40px -24px oklch(0.4 0.05 250 / .5); padding:14px 15px 13px; position:relative; }
+  .aD-pop::before{ content:""; position:absolute; top:-6px; left:202px; width:11px; height:11px; background:var(--paper); border-left:1px solid var(--line); border-top:1px solid var(--line); transform:rotate(45deg); }
+  .aD-pop-head{ display:flex; align-items:center; gap:7px; font-size:10.5px; font-weight:700; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-faint); }
+  .aD-pop-head svg{ color:var(--ink-faint); }
+  .aD-pop-x{ margin-left:auto; color:var(--ink-ghost); font-size:15px; cursor:pointer; }
+  .aD-pop-body{ display:flex; flex-direction:column; gap:5px; margin:11px 0 13px; }
+  .aD-pop-q{ font-family:var(--serif); font-size:15.5px; line-height:1.42; color:var(--ink); text-wrap:pretty; }
+  .aD-pop-to{ font-size:12px; color:var(--accent-ink); font-weight:600; }
+  .aD-pop-acts{ display:flex; align-items:center; gap:8px; }
+  .aD-yes{ display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 13px; border-radius:8px; border:none; background:var(--ink); color:var(--paper); font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .aD-no{ height:32px; padding:0 13px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--ink-soft); font:inherit; font-size:12.5px; font-weight:500; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="lesen-konzepte.jsx"></script>
+<script type="text/babel">
+  const { ConceptA, ConceptB, ConceptC, ConceptD } = window.LesenKonzepte;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="lesen" title="Lesen · Lean-Konzepte" subtitle="Vier Strategien, denselben Zettel ruhiger zu zeigen. Belege und Luhms Vermutung treten zurück, der Zettel bleibt die Hauptsache.">
+          <DCArtboard id="a" label="A · Stiller Apparat" width={700} height={520}><ConceptA /></DCArtboard>
+          <DCArtboard id="b" label="B · Marginalien" width={700} height={520}><ConceptB /></DCArtboard>
+          <DCArtboard id="c" label="C · Apparat-Leiste" width={700} height={560}><ConceptC /></DCArtboard>
+          <DCArtboard id="d" label="D · Vermutung später" width={700} height={672}><ConceptD /></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

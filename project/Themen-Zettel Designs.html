@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Themen-Zettel · Gestaltungsvarianten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper: oklch(0.992 0.003 95);
+    --panel: oklch(0.980 0.004 95);
+    --panel-2: oklch(0.966 0.005 92);
+    --ink: oklch(0.26 0.013 60);
+    --ink-soft: oklch(0.47 0.012 60);
+    --ink-faint: oklch(0.64 0.010 62);
+    --ink-ghost: oklch(0.80 0.006 70);
+    --line: oklch(0.905 0.004 80);
+    --line-soft: oklch(0.945 0.003 80);
+    --accent: oklch(0.52 0.105 250);
+    --accent-ink: oklch(0.45 0.11 250);
+    --accent-wash: oklch(0.52 0.105 250 / 0.10);
+    --accent-line: oklch(0.52 0.105 250 / 0.40);
+    --sans: 'Hanken Grotesk', system-ui, sans-serif;
+    --serif: 'Newsreader', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; height:100%; }
+  body{ font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  .mono{ font-family: var(--mono); font-feature-settings: "tnum" 1; letter-spacing:-0.01em; }
+  .serif{ font-family: var(--serif); }
+
+  .seclabel{ font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color: var(--ink-faint); }
+  .tag{ display:inline-flex; align-items:center; height:25px; padding:0 11px; border-radius:6px; background: var(--panel-2); color: var(--ink-soft); font-size:12px; font-weight:500; border:1px solid var(--line); }
+
+  .ncard{ background: var(--paper); border:1px solid var(--line); border-radius:11px; padding:13px 15px; cursor:default; transition: border-color .15s, transform .15s, box-shadow .15s; }
+  .ncard:hover{ border-color: var(--accent-line); transform: translateY(-1px); box-shadow:0 8px 22px -14px oklch(0.4 0.05 250 / .4); }
+  .ncard .nid{ font-size:12.5px; color: var(--accent-ink); font-weight:500; }
+  .ncard .ntext{ font-size:15px; line-height:1.42; color: var(--ink-soft); margin-top:6px; }
+
+  /* ===================== ECHTER DIGITALER ZETTEL ===================== */
+  .reldot{ width:7px; height:7px; border-radius:50%; background:var(--ink-faint); flex:0 0 auto; }
+  .reldot.folge{ background:var(--accent); }
+  .reldot.verzweig{ background:var(--ink-soft); }
+  .reldot.verweis{ width:7px; height:7px; border-radius:50%; border:1.5px solid var(--accent); background:transparent; }
+  .reldot.vor{ background:var(--ink-ghost); }
+
+  .z-card{ width:608px; max-width:100%; background:var(--paper); border:1px solid var(--line); border-radius:5px;
+    padding:30px 36px 24px; box-shadow:0 1px 0 oklch(0.4 0.04 70 / .04), 0 26px 60px -40px oklch(0.4 0.05 70 / .55); }
+  .z-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding-bottom:22px; margin-bottom:22px; border-bottom:1px solid var(--line-soft); }
+  .z-kw{ display:flex; flex-direction:column; gap:3px; padding-top:3px; }
+  .z-kwlbl{ font-size:9.5px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-ghost); }
+  .z-kwval{ font-size:14px; font-weight:600; color:var(--ink-soft); letter-spacing:.01em; }
+  .z-addrwrap{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  .z-addr{ font-size:32px; font-weight:600; color:var(--ink); letter-spacing:-0.03em; line-height:.9; }
+  .z-addrcap{ font-size:9.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-ghost); }
+  .z-body{ font-size:18.5px; line-height:1.72; color:var(--ink); letter-spacing:-0.003em; text-wrap:pretty; }
+  .z-body p{ margin:0; }
+  .z-body p + p{ margin-top:13px; }
+  .z-ref{ color:var(--accent-ink); font-weight:500; white-space:nowrap; cursor:pointer; border-bottom:1px solid var(--accent-line); padding-bottom:1px; transition:border-color .14s; }
+  .z-ref:hover{ border-color:var(--accent-ink); }
+  .z-app{ margin-top:26px; padding-top:20px; border-top:1px solid var(--line); }
+  .z-applbl{ font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px; }
+  .z-grid{ display:grid; grid-template-columns:1fr 1fr; gap:13px 28px; }
+  .z-grp{ display:flex; align-items:center; gap:9px; }
+  .z-grplbl{ font-size:12px; color:var(--ink-faint); flex:0 0 auto; min-width:88px; }
+  .z-num{ font-size:14px; font-weight:600; color:var(--accent-ink); letter-spacing:-0.01em; white-space:nowrap; }
+  .z-backlink{ display:flex; align-items:center; gap:7px; margin-top:22px; padding-top:15px; border-top:1px dashed var(--line); font-size:11.5px; color:var(--ink-faint); }
+  .z-backlink svg{ color:var(--ink-ghost); flex:0 0 auto; }
+  .z-bltitle{ font-style:italic; color:var(--ink-soft); }
+
+  /* ===================== A · LUHMANN-TREU ===================== */
+  .al-wrap{ max-width:660px; }
+  .al-threshrow{ display:flex; align-items:center; gap:13px; padding:2px 0 10px; }
+  .al-eyebrow{ font-size:10px; font-weight:700; letter-spacing:.17em; text-transform:uppercase; color:var(--accent-ink); flex:0 0 auto; }
+  .al-title{ font-size:18px; font-weight:500; color:var(--ink); letter-spacing:-0.012em; white-space:nowrap; flex:0 0 auto; }
+  .al-flex{ flex:1 1 auto; }
+  .al-ptr{ display:inline-flex; align-items:center; gap:6px; flex:0 0 auto; }
+  .al-ptrlabel{ font-size:11px; color:var(--ink-faint); letter-spacing:.02em; }
+  .al-addr{ font-size:14px; font-weight:600; color:var(--accent-ink); }
+  .al-vline{ width:1px; height:18px; background:var(--line); flex:0 0 auto; }
+  .al-actions{ display:flex; align-items:center; gap:4px; flex:0 0 auto; }
+  .al-ghost{ width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border:1px solid transparent; border-radius:7px; background:transparent; color:var(--ink-ghost); cursor:pointer; transition:.14s; }
+  .al-ghost:hover{ color:var(--accent-ink); border-color:var(--accent-line); }
+  .al-rule{ height:2px; background:linear-gradient(90deg, var(--accent) 0 72px, var(--accent-line) 72px 96px, var(--line) 96px); border-radius:2px; }
+  .al-alts{ display:flex; align-items:flex-start; gap:10px; padding-left:2px; }
+  .al-altlabel{ font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); align-self:flex-start; margin-top:7px; }
+  .al-door{ display:inline-flex; align-items:center; height:25px; padding:0 11px; border:1px solid var(--accent-line); border-radius:0 0 7px 7px; border-top:none; background:var(--accent-wash); font:inherit; font-size:13px; font-weight:600; color:var(--accent-ink); cursor:pointer; position:relative; top:-1px; transition:.14s; }
+  .al-door:hover{ background:oklch(0.52 0.105 250 / 0.16); }
+  .al-door-add{ border-style:dashed; border-color:var(--ink-ghost); background:transparent; color:var(--ink-faint); font-weight:500; }
+  .al-door-add:hover{ color:var(--accent-ink); border-color:var(--accent-line); background:transparent; }
+  .al-zettel{ margin-top:24px; }
+  .al-trace{ display:flex; align-items:center; gap:9px; margin-top:30px; padding-top:16px; border-top:1px dashed var(--line); font-size:12.5px; font-style:italic; color:var(--ink-faint); }
+  .al-tracedot{ width:6px; height:6px; border-radius:50%; border:1.5px solid var(--accent-line); flex:0 0 auto; }
+
+  /* ===================== A · REGISTER-REITER ===================== */
+  .va-wrap{ max-width:660px; }
+  .va-tabrow{ display:flex; align-items:flex-end; justify-content:space-between; padding:0 4px; }
+  .va-tab{ display:inline-flex; align-items:center; gap:9px; padding:9px 18px 10px; background:var(--panel); border:1px solid var(--line); border-bottom:none;
+    border-radius:11px 11px 0 0; box-shadow:0 -2px 10px -8px oklch(0.4 0.05 250 / .3); position:relative; top:1px; }
+  .va-tab::before{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:var(--accent); border-radius:11px 11px 0 0; opacity:.85; }
+  .va-tabtitle{ font-size:16px; font-weight:500; color:var(--ink); letter-spacing:-0.01em; white-space:nowrap; }
+  .va-tabactions{ display:flex; align-items:center; gap:4px; padding-bottom:7px; }
+  .va-ghost{ width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; border:1px solid transparent; border-radius:8px; background:transparent; color:var(--ink-ghost); cursor:pointer; transition:.14s; }
+  .va-ghost:hover{ color:var(--accent-ink); border-color:var(--accent-line); background:var(--paper); }
+  .va-card{ background:var(--panel); border:1px solid var(--line); border-radius:0 11px 13px 13px; padding:22px 26px 28px; box-shadow:0 24px 60px -42px oklch(0.4 0.06 250 / .55); }
+  .va-leit{ font-size:15.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; letter-spacing:.005em; text-wrap:pretty; }
+  .va-divide{ height:1px; background:repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px); margin:18px 0 24px; }
+
+  /* ===================== B · FADEN / RANDSPALTE ===================== */
+  .vb-wrap{ max-width:680px; display:flex; gap:0; }
+  .vb-spine{ flex:0 0 3px; width:3px; border-radius:3px; background:linear-gradient(180deg, var(--accent), var(--accent-line) 70%, transparent); margin-right:24px; }
+  .vb-body{ flex:1; min-width:0; }
+  .vb-head{ margin-bottom:26px; }
+  .vb-eyebrow{ display:flex; align-items:center; gap:9px; margin-bottom:11px; }
+  .vb-kicker{ font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-ink); }
+  .vb-dot{ width:3px; height:3px; border-radius:50%; background:var(--ink-ghost); }
+  .vb-reihe{ font-size:11px; font-weight:600; letter-spacing:.04em; color:var(--ink-faint); text-transform:uppercase; }
+  .vb-ghost{ display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 9px; border:1px solid transparent; border-radius:7px; background:transparent; font:inherit; font-size:11.5px; font-weight:600; color:var(--ink-faint); cursor:pointer; transition:.14s; }
+  .vb-ghost:hover{ color:var(--accent-ink); border-color:var(--accent-line); }
+  .vb-x{ padding:0; width:26px; justify-content:center; }
+  .vb-title{ font-size:24px; font-weight:500; color:var(--ink); line-height:1.12; letter-spacing:-0.018em; }
+  .vb-leit{ font-size:15.5px; font-style:italic; color:var(--ink-soft); line-height:1.5; margin-top:8px; text-wrap:pretty; }
+
+  /* ===================== C · LEITSATZ-KOPF ===================== */
+  .vc-wrap{ max-width:660px; }
+  .vc-toprow{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  .vc-eyebrow{ font-size:10.5px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--accent-ink); flex:0 0 auto; }
+  .vc-rule{ flex:1; height:1px; background:var(--line); }
+  .vc-reihe{ font-size:12px; color:var(--ink-faint); flex:0 0 auto; white-space:nowrap; }
+  .vc-ghost{ display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; border:1px solid transparent; border-radius:7px; background:transparent; font:inherit; font-size:12px; font-weight:600; color:var(--ink-faint); cursor:pointer; transition:.14s; flex:0 0 auto; }
+  .vc-ghost:hover{ color:var(--accent-ink); border-color:var(--accent-line); }
+  .vc-x{ padding:0; width:28px; justify-content:center; }
+  .vc-title{ font-size:38px; font-weight:500; color:var(--ink); line-height:1.06; letter-spacing:-0.022em; margin:0; text-wrap:balance; }
+  .vc-leit{ font-size:18px; font-style:italic; color:var(--ink-soft); line-height:1.45; margin:14px 0 0; max-width:54ch; text-wrap:pretty; }
+  .vc-hr{ height:1px; background:var(--ink); opacity:.14; margin:26px 0 30px; }
+
+  /* host bg */
+  #root{ height:100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#2a3a5c" />
+    <rect x="30" y="22" width="40" height="14" rx="3" fill="#fff" opacity="0.95" />
+    <rect x="22" y="38" width="56" height="40" rx="4" fill="#fff" />
+    <rect x="30" y="48" width="30" height="3" rx="1.5" fill="#2a3a5c" />
+    <rect x="30" y="56" width="40" height="3" rx="1.5" fill="#9aa6bd" />
+    <rect x="30" y="63" width="36" height="3" rx="1.5" fill="#9aa6bd" />
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="themen-zettel-variants.jsx"></script>
+<script type="text/babel">
+  const { VariantA, VariantALuhmann, VariantB, VariantC, BareSlip } = window.ThemenVariants;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="themen" title="Themen-Einstieg" subtitle="Vier Gestaltungsrichtungen für den Themen-Einstieg im Lese-Modus — jeweils über einem echten Zettel.">
+          <DCArtboard id="a" label="A · Register-Reiter" width={760} height={620}><VariantA /></DCArtboard>
+          <DCArtboard id="a-luhmann" label="A · Luhmann-treu" width={760} height={680}><VariantALuhmann /></DCArtboard>
+          <DCArtboard id="b" label="B · Faden" width={760} height={600}><VariantB /></DCArtboard>
+          <DCArtboard id="c" label="C · Leitsatz-Kopf" width={760} height={620}><VariantC /></DCArtboard>
+        </DCSection>
+        <DCSection id="zettel" title="Der reine Zettel" subtitle="Wie Luhmann den Zettel selbst gestaltete — ohne Titel, ohne Thema. Feste Stelle, dichter Text, Verweisapparat. Das Thema ist ein Rückverweis, kein Kopf.">
+          <DCArtboard id="bare" label="Echter digitaler Zettel" width={720} height={560}><BareSlip /></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

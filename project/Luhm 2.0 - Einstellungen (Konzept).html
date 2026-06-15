@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Luhm 2.0 · Einstellungen (Konzept)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="z2-style.css" />
+<style>
+  html,body{ height:100%; margin:0; }
+  body{
+    background: radial-gradient(120% 90% at 50% 16%, oklch(0.955 0.010 86), oklch(0.90 0.014 82) 80%);
+    display:flex; align-items:flex-start; justify-content:center; gap:38px;
+    padding:46px 24px 60px; min-height:100%;
+    font-family:'Hanken Grotesk', system-ui, sans-serif;
+    color:var(--ink);
+  }
+  /* Konzept-Begleittext links */
+  .konzept-note{ width:248px; flex:0 0 auto; padding-top:6px; }
+  .konzept-note h1{ font-size:18px; font-weight:700; letter-spacing:-0.01em; margin:0 0 4px; color:var(--ink); }
+  .konzept-note .kicker{ font-family:var(--mono); font-size:10.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-ink); margin:0 0 14px; }
+  .konzept-note p{ font-size:13px; line-height:1.62; color:var(--ink-soft); margin:0 0 13px; text-wrap:pretty; }
+  .konzept-note .open-via{ display:inline-flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .konzept-note ul{ margin:4px 0 0; padding:0; list-style:none; }
+  .konzept-note li{ display:flex; gap:9px; font-size:12.5px; line-height:1.5; color:var(--ink-soft); padding:5px 0; border-top:1px solid var(--line-soft); }
+  .konzept-note li:first-child{ border-top:none; }
+  .konzept-note li b{ color:var(--ink); font-weight:600; }
+  .konzept-note li i{ color:var(--accent-ink); font-style:normal; flex:0 0 auto; width:20px; text-align:center; margin-top:1px; font-size:12px; }
+
+  /* Fenster */
+  #win{ width:430px; height:760px; flex:0 0 auto; }
+  #win > .z2-win{ width:100%; height:100%; }
+
+  /* ============ Einstellungen-Panel ============ */
+  .z2-set{ flex:1; min-height:0; display:flex; flex-direction:column; }
+  .z2-setbody{ flex:1; min-height:0; overflow-y:auto; padding:6px 18px 26px; }
+  .z2-setbody::-webkit-scrollbar{ width:8px; }
+  .z2-setbody::-webkit-scrollbar-thumb{ background:var(--line); border-radius:99px; }
+
+  .z2-setsec{ padding-top:22px; }
+  .z2-setsec:first-child{ padding-top:14px; }
+  .z2-setlabel{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-ghost); margin-bottom:12px; }
+  .z2-setlabel svg{ width:13px; height:13px; color:var(--ink-faint); }
+  .z2-sethint{ font-size:12px; line-height:1.55; color:var(--ink-faint); margin:10px 2px 0; text-wrap:pretty; }
+
+  /* Akkordeon-Sektionen */
+  .z2-acc{ border-top:1px solid var(--line-soft); }
+  .z2-acc:first-of-type{ border-top:none; }
+  .z2-acchead{ display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:none; border:none; padding:14px 5px; cursor:pointer; color:var(--ink); font:inherit; border-radius:8px; transition: background .12s; }
+  .z2-acchead:hover{ background:var(--paper-2); }
+  .z2-accic{ flex:0 0 auto; display:inline-flex; color:var(--ink-faint); }
+  .z2-accic svg{ width:16px; height:16px; }
+  .z2-acctitle{ flex:0 0 auto; font-size:13.5px; font-weight:600; letter-spacing:-0.005em; color:var(--ink); }
+  .z2-accval{ flex:1; min-width:0; text-align:right; font-size:12px; color:var(--ink-ghost); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition: opacity .16s; }
+  .z2-acc.open .z2-accval{ opacity:0; }
+  .z2-accchev{ flex:0 0 auto; display:inline-flex; color:var(--ink-ghost); transition: transform .22s ease, color .12s; }
+  .z2-accchev svg{ width:16px; height:16px; }
+  .z2-acc.open .z2-accchev{ transform:rotate(180deg); color:var(--ink-faint); }
+  .z2-accbody{ display:none; }
+  .z2-acc.open .z2-accbody{ display:block; }
+  .z2-accpad{ padding:2px 5px 20px; }
+  .z2-accpad .z2-preview{ margin-bottom:13px; }
+
+  /* Themen-Gruppen */
+  .z2-grouphead{ font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); padding:7px 5px 5px; }
+  .z2-groupsep{ border:none; border-top:1px dashed var(--line); margin:16px 2px 4px; }
+  .z2-acc{ border-top:1px solid var(--line-soft); }
+  .z2-grouphead + .z2-acc{ border-top:none; }
+
+  /* Live-Vorschau (Mini-Zettel) */
+  .z2-preview{ border:1px solid var(--line); border-radius:13px; background:var(--paper-top); padding:15px 17px 16px; box-shadow: inset 0 1px 0 oklch(1 0 0 / .4); }
+  .z2-preview-top{ display:flex; flex-wrap:nowrap; align-items:baseline; gap:8px; margin-bottom:9px; }
+  .z2-preview-addr{ font-family:var(--mono); font-size:11px; font-weight:600; color:var(--accent-ink); }
+  .z2-preview-reihe{ font-size:10.5px; color:var(--ink-ghost); }
+  .z2-preview-body{ font-size:15.5px; line-height:1.62; color:var(--ink); text-wrap:pretty; }
+
+  /* Schrift-Optionen */
+  .z2-fonts{ display:flex; flex-direction:column; gap:8px; }
+  .z2-fontopt{ display:flex; align-items:center; gap:13px; width:100%; text-align:left; background:var(--paper-top); border:1px solid var(--line); border-radius:11px; padding:11px 14px; cursor:pointer; transition: border-color .14s, background .14s, box-shadow .14s; }
+  .z2-fontopt:hover{ border-color:var(--line); background:var(--paper-2); }
+  .z2-fontopt.on{ border-color:var(--accent-line); background:var(--accent-wash); box-shadow: 0 0 0 1px var(--accent-line); }
+  .z2-fontradio{ flex:0 0 auto; width:17px; height:17px; border-radius:50%; border:1.5px solid var(--line); display:inline-flex; align-items:center; justify-content:center; transition: border-color .14s; }
+  .z2-fontopt.on .z2-fontradio{ border-color:var(--accent); }
+  .z2-fontradio i{ width:8px; height:8px; border-radius:50%; background:var(--accent); transform:scale(0); transition: transform .14s; }
+  .z2-fontopt.on .z2-fontradio i{ transform:scale(1); }
+  .z2-fonttext{ flex:1; min-width:0; }
+  .z2-fontname{ display:block; font-size:14px; font-weight:600; color:var(--ink); letter-spacing:-0.01em; }
+  .z2-fontmeta{ display:block; font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+  .z2-fontsample{ flex:0 0 auto; font-size:21px; color:var(--ink-soft); line-height:1; }
+
+  /* Regler */
+  .z2-slider-wrap{ background:var(--paper-top); border:1px solid var(--line); border-radius:12px; padding:15px 16px 13px; }
+  .z2-slider-ends{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-faint); margin-bottom:11px; }
+  .z2-slider-ends b{ color:var(--ink-soft); font-weight:600; }
+  input[type=range].z2-range{ -webkit-appearance:none; appearance:none; width:100%; height:10px; border-radius:99px; outline:none; cursor:pointer;
+    background: linear-gradient(90deg, oklch(0.955 0.030 86), oklch(1 0 0)); border:1px solid var(--line); }
+  input[type=range].z2-range::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%; background:var(--paper); border:1px solid var(--line); box-shadow:0 2px 6px -1px oklch(0.3 0.04 60 / .4), inset 0 0 0 3px var(--paper); cursor:grab; }
+  input[type=range].z2-range::-webkit-slider-thumb:active{ cursor:grabbing; }
+  input[type=range].z2-range::-moz-range-thumb{ width:22px; height:22px; border-radius:50%; background:var(--paper); border:1px solid var(--line); box-shadow:0 2px 6px -1px oklch(0.3 0.04 60 / .4), inset 0 0 0 3px var(--paper); cursor:grab; }
+  .z2-slider-val{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:11px; font-size:12px; color:var(--ink-faint); }
+  .z2-slider-val span{ white-space:nowrap; }
+  .z2-slider-val .v{ font-family:var(--mono); color:var(--ink-soft); }
+
+  /* Felder & Buttons */
+  .z2-field{ display:flex; gap:8px; align-items:stretch; }
+  .z2-input{ flex:1; min-width:0; height:38px; padding:0 12px; border:1px solid var(--line); border-radius:9px; background:var(--paper-top); font:inherit; font-size:13px; color:var(--ink); outline:none; transition: border-color .14s, box-shadow .14s; }
+  .z2-input::placeholder{ color:var(--ink-ghost); }
+  .z2-input:focus{ border-color:var(--accent-line); box-shadow: 0 0 0 3px var(--accent-wash); }
+  .z2-input.mono{ font-family:var(--mono); font-size:12px; }
+  .z2-btn{ display:inline-flex; align-items:center; justify-content:center; gap:7px; height:38px; padding:0 15px; border-radius:9px; font:inherit; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition: background .14s, border-color .14s, color .14s; }
+  .z2-btn.primary{ background:var(--accent); border:1px solid var(--accent); color:oklch(0.99 0.005 250); }
+  .z2-btn.primary:hover{ background:var(--accent-ink); }
+  .z2-btn.ghost{ background:var(--paper-top); border:1px solid var(--line); color:var(--ink-soft); }
+  .z2-btn.ghost:hover{ border-color:var(--accent-line); color:var(--accent-ink); }
+  .z2-btn svg{ width:15px; height:15px; }
+
+  /* Status-Pille */
+  .z2-status{ display:inline-flex; align-items:center; gap:7px; white-space:nowrap; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:11px; }
+  .z2-dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+  .z2-dot.off{ background:var(--ink-ghost); }
+  .z2-dot.on{ background:oklch(0.62 0.13 150); box-shadow:0 0 0 3px oklch(0.62 0.13 150 / .18); }
+  .z2-substatus{ font-size:11.5px; color:var(--ink-faint); margin-top:9px; }
+  .z2-substatus b{ color:var(--ink-soft); font-weight:600; }
+
+  /* Ordner-Struktur */
+  .z2-tree{ margin-top:11px; background:var(--paper-2); border:1px solid var(--line-soft); border-radius:11px; padding:11px 14px; }
+  .z2-trow{ display:flex; align-items:baseline; gap:10px; font-family:var(--mono); font-size:12px; line-height:1.9; }
+  .z2-trow .nm{ flex:0 0 auto; }
+  .z2-trow .cmt{ flex:1; text-align:right; color:var(--ink-ghost); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .z2-tree .root{ color:var(--ink); font-weight:600; }
+  .z2-tree .sub{ color:var(--accent-ink); font-weight:600; }
+  .z2-tree .file{ color:var(--ink-faint); font-size:11px; }
+
+  /* Account (später) */
+  .z2-soon{ display:flex; align-items:center; gap:13px; background:var(--paper-2); border:1px dashed var(--line); border-radius:12px; padding:14px 15px; }
+  .z2-soon-ic{ flex:0 0 auto; width:34px; height:34px; border-radius:9px; background:var(--paper-top); border:1px solid var(--line-soft); display:inline-flex; align-items:center; justify-content:center; color:var(--ink-faint); }
+  .z2-soon-ic svg{ width:17px; height:17px; }
+  .z2-soon-txt{ flex:1; min-width:0; }
+  .z2-soon-txt .t{ font-size:13.5px; font-weight:600; color:var(--ink-soft); }
+  .z2-soon-txt .d{ font-size:11.5px; color:var(--ink-faint); margin-top:1px; }
+  .z2-badge{ flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:.04em; color:var(--ink-ghost); background:var(--paper-top); border:1px solid var(--line-soft); border-radius:99px; padding:3px 9px; }
+
+  @media (max-width: 760px){
+    body{ flex-direction:column; align-items:center; }
+    .konzept-note{ width:430px; max-width:92vw; }
+  }
+</style>
+</head>
+<body>
+
+  <aside class="konzept-note">
+    <p class="kicker">Konzept</p>
+    <h1>Einstellungen</h1>
+    <p>Ein ruhiges Vollflächen-Panel im selben Stil wie Register und Highlights — eine einzige scrollbare Spalte, in Abschnitte gegliedert.</p>
+    <div class="open-via">Öffnen über <span class="z2-kc"><span class="z2-kc-s">⌘</span><span class="z2-kc-s">K</span></span> → <b>Einstellungen</b></div>
+    <ul style="margin-top:16px;">
+      <li><i>Aa</i><span><b>Schrift</b> — drei Lesetypen</span></li>
+      <li><i>◑</i><span><b>Oberfläche</b> — Papierton warm→weiß</span></li>
+      <li><i>↻</i><span><b>Readwise</b> — API-Token verbinden</span></li>
+      <li><i>▤</i><span><b>Lokaler Speicher</b> — ein Ordner, Auto-Struktur</span></li>
+      <li><i>◇</i><span><b>Account</b> — Geräte-Sync, später</span></li>
+    </ul>
+    <p style="margin-top:16px; font-size:12px; color:var(--ink-ghost);">Schrift &amp; Papierton reagieren in dieser Vorschau live — probier sie aus.</p>
+  </aside>
+
+  <div id="win">
+    <div class="z2-win v-blatt" id="zwin">
+      <!-- Fensterkopf als Panel-Kopf -->
+      <div class="z2-panelhead">
+        <span class="z2-lights" style="margin-right:4px;">
+          <span style="background:#f3655b;"></span><span style="background:#f5bd4f;"></span><span style="background:#61c554;"></span>
+        </span>
+        <span class="z2-setic" style="display:inline-flex;color:var(--ink-faint);">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+        </span>
+        <span class="z2-paneltitle">Einstellungen</span>
+        <span class="z2-flex"></span>
+        <span class="z2-cmdesc">esc</span>
+      </div>
+
+      <div class="z2-set">
+        <div class="z2-setbody">
+
+          <!-- �· KONTO ·──────────────────────── -->
+          <div class="z2-grouphead">Konto</div>
+          <div class="z2-acc" data-acc>
+            <button class="z2-acchead" type="button">
+              <span class="z2-accic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>
+              <span class="z2-acctitle">Account</span>
+              <span class="z2-accval">Bald</span>
+              <span class="z2-accchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="z2-accbody"><div class="z2-accinner"><div class="z2-accpad">
+              <div class="z2-soon">
+                <span class="z2-soon-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span>
+                <span class="z2-soon-txt"><span class="t">Account anlegen</span><span class="d">Sync &amp; Backup über mehrere Geräte hinweg.</span></span>
+                <span class="z2-badge">BALD</span>
+              </div>
+            </div></div></div>
+          </div>
+
+          <!-- �· DESIGN ·──────────────────────── -->
+          <hr class="z2-groupsep" />
+          <div class="z2-grouphead">Design</div>
+          <div class="z2-acc open" data-acc>
+            <button class="z2-acchead" type="button">
+              <span class="z2-accic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg></span>
+              <span class="z2-acctitle">Schrift</span>
+              <span class="z2-accval" id="valSchrift">Grotesk</span>
+              <span class="z2-accchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="z2-accbody"><div class="z2-accinner"><div class="z2-accpad">
+              <div class="z2-preview" id="preview">
+                <div class="z2-preview-top">
+                  <span class="z2-preview-addr">1/1a</span>
+                  <span class="z2-preview-reihe">· Schreiben</span>
+                </div>
+                <div class="z2-preview-body" id="previewBody">Man schreibt nicht auf, was man denkt — man denkt, indem man schreibt. Der Zettel zwingt zur Entscheidung.</div>
+              </div>
+              <div class="z2-fonts" id="fonts">
+                <button class="z2-fontopt on" data-font="'Hanken Grotesk', system-ui, sans-serif" data-name="Grotesk">
+                  <span class="z2-fontradio"><i></i></span>
+                  <span class="z2-fonttext"><span class="z2-fontname">Grotesk</span><span class="z2-fontmeta">Hanken Grotesk · klar &amp; modern</span></span>
+                  <span class="z2-fontsample" style="font-family:'Hanken Grotesk',sans-serif;">Aa</span>
+                </button>
+                <button class="z2-fontopt" data-font="'Source Serif 4', Georgia, serif" data-name="Serif">
+                  <span class="z2-fontradio"><i></i></span>
+                  <span class="z2-fonttext"><span class="z2-fontname">Serif</span><span class="z2-fontmeta">Source Serif · ruhig &amp; literarisch</span></span>
+                  <span class="z2-fontsample" style="font-family:'Source Serif 4',serif;">Aa</span>
+                </button>
+                <button class="z2-fontopt" data-font="'JetBrains Mono', ui-monospace, monospace" data-name="Schreibmaschine">
+                  <span class="z2-fontradio"><i></i></span>
+                  <span class="z2-fonttext"><span class="z2-fontname">Schreibmaschine</span><span class="z2-fontmeta">JetBrains Mono · fokussiert</span></span>
+                  <span class="z2-fontsample" style="font-family:'JetBrains Mono',monospace;font-size:18px;">Aa</span>
+                </button>
+              </div>
+            </div></div></div>
+          </div>
+          <div class="z2-acc" data-acc>
+            <button class="z2-acchead" type="button">
+              <span class="z2-accic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg></span>
+              <span class="z2-acctitle">Oberfläche</span>
+              <span class="z2-accval" id="valPaper">warm · 100 %</span>
+              <span class="z2-accchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="z2-accbody"><div class="z2-accinner"><div class="z2-accpad">
+              <div class="z2-slider-wrap">
+                <div class="z2-slider-ends"><b>Warm</b><b>Weiß</b></div>
+                <input type="range" class="z2-range" id="paperRange" min="0" max="100" value="0" />
+                <div class="z2-slider-val"><span>Tönung des Papiers</span><span class="v" id="paperVal">warm · 100 %</span></div>
+              </div>
+              <div class="z2-sethint">Verschiebt die gesamte Zetteloberfläche stufenlos vom heutigen warmen Karteikarten-Ton bis zu reinem Weiß.</div>
+            </div></div></div>
+          </div>
+
+          <!-- �· DATEN & SPEICHER ·──────────────── -->
+          <hr class="z2-groupsep" />
+          <div class="z2-grouphead">Daten &amp; Speicher</div>
+          <div class="z2-acc" data-acc>
+            <button class="z2-acchead" type="button">
+              <span class="z2-accic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14 4.5L20 16"/><path d="M20 20v-4h-4"/></svg></span>
+              <span class="z2-acctitle">Readwise</span>
+              <span class="z2-accval">Nicht verbunden</span>
+              <span class="z2-accchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="z2-accbody"><div class="z2-accinner"><div class="z2-accpad">
+              <div class="z2-status"><span class="z2-dot off"></span> Nicht verbunden</div>
+              <div class="z2-field">
+                <input class="z2-input mono" type="password" placeholder="Readwise API-Token einfügen" value="••••••••••••••••" />
+                <button class="z2-btn primary">Verbinden</button>
+              </div>
+              <div class="z2-substatus">Token unter <b>readwise.io/access_token</b> erzeugen. Nach dem Verbinden werden Highlights automatisch geladen.</div>
+            </div></div></div>
+          </div>
+          <div class="z2-acc" data-acc>
+            <button class="z2-acchead" type="button">
+              <span class="z2-accic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+              <span class="z2-acctitle">Lokaler Speicher</span>
+              <span class="z2-accval">~/Documents/Luhm</span>
+              <span class="z2-accchev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="z2-accbody"><div class="z2-accinner"><div class="z2-accpad">
+              <div class="z2-field">
+                <input class="z2-input mono" type="text" value="~/Documents/Luhm" readonly />
+                <button class="z2-btn ghost">Ordner wählen</button>
+              </div>
+              <div class="z2-tree">
+                <div class="z2-trow"><span class="nm root">Luhm/</span></div>
+                <div class="z2-trow" style="padding-left:16px;"><span class="nm sub">Zettel/</span><span class="cmt"># Notizen als .md</span></div>
+                <div class="z2-trow" style="padding-left:32px;"><span class="nm file">1-1.md · 1-1a.md …</span></div>
+                <div class="z2-trow" style="padding-left:16px;"><span class="nm sub">Highlights/</span><span class="cmt"># Readwise als .md</span></div>
+                <div class="z2-trow" style="padding-left:32px;"><span class="nm file">Ahrens.md · Luhmann.md …</span></div>
+              </div>
+              <div class="z2-sethint">Alle Notizen werden ohnehin laufend als Markdown gesichert — du gibst nur den Ort an, die Unterordner <b>Zettel</b> und <b>Highlights</b> entstehen automatisch.</div>
+            </div></div></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // — Akkordeon —
+  document.querySelectorAll('.z2-acc').forEach((acc) => {
+    acc.querySelector('.z2-acchead').addEventListener('click', () => acc.classList.toggle('open'));
+  });
+
+  // — Schrift live —
+  const previewBody = document.getElementById('previewBody');
+  const valSchrift = document.getElementById('valSchrift');
+  document.getElementById('fonts').addEventListener('click', (e) => {
+    const opt = e.target.closest('.z2-fontopt');
+    if (!opt) return;
+    document.querySelectorAll('.z2-fontopt').forEach(o => o.classList.toggle('on', o === opt));
+    previewBody.style.fontFamily = opt.dataset.font;
+    valSchrift.textContent = opt.dataset.name;
+  });
+
+  // — Papierton live (warm → weiß) —
+  // Endpunkte: warmes Papier  oklch(0.968 0.016 86)  →  Weiß oklch(1 0 0)
+  const win = document.getElementById('zwin');
+  const range = document.getElementById('paperRange');
+  const val = document.getElementById('paperVal');
+  const valPaper = document.getElementById('valPaper');
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function applyPaper(t) {
+    // t: 0 = warm, 1 = weiß
+    const paper    = `oklch(${lerp(0.968,1.0,t).toFixed(4)} ${lerp(0.016,0,t).toFixed(4)} 86)`;
+    const paper2   = `oklch(${lerp(0.948,0.992,t).toFixed(4)} ${lerp(0.018,0,t).toFixed(4)} 84)`;
+    const paperTop = `oklch(${lerp(0.958,0.997,t).toFixed(4)} ${lerp(0.018,0,t).toFixed(4)} 85)`;
+    const line     = `oklch(${lerp(0.885,0.905,t).toFixed(4)} ${lerp(0.012,0,t).toFixed(4)} 82)`;
+    const lineSoft = `oklch(${lerp(0.925,0.945,t).toFixed(4)} ${lerp(0.010,0,t).toFixed(4)} 84)`;
+    win.style.setProperty('--paper', paper);
+    win.style.setProperty('--paper-2', paper2);
+    win.style.setProperty('--paper-top', paperTop);
+    win.style.setProperty('--line', line);
+    win.style.setProperty('--line-soft', lineSoft);
+    win.style.background = paper;
+    const pct = Math.round(t * 100);
+    const label = t < 0.04 ? 'warm · 100 %' : (t > 0.96 ? 'weiß · 100 %' : `${100 - pct} % warm`);
+    val.textContent = label;
+    valPaper.textContent = label;
+  }
+  range.addEventListener('input', () => applyPaper(range.value / 100));
+  applyPaper(0);
+</script>
+</body>
+</html>

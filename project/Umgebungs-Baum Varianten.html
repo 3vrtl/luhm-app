@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Umgebungs-Baum · Varianten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper: oklch(0.992 0.003 95);
+    --panel: oklch(0.980 0.004 95);
+    --panel-2: oklch(0.966 0.005 92);
+    --ink: oklch(0.26 0.013 60);
+    --ink-soft: oklch(0.47 0.012 60);
+    --ink-faint: oklch(0.64 0.010 62);
+    --ink-ghost: oklch(0.80 0.006 70);
+    --line: oklch(0.905 0.004 80);
+    --line-soft: oklch(0.945 0.003 80);
+    --accent: oklch(0.52 0.105 250);
+    --accent-ink: oklch(0.45 0.11 250);
+    --accent-wash: oklch(0.52 0.105 250 / 0.10);
+    --accent-line: oklch(0.52 0.105 250 / 0.40);
+    --sans: 'Hanken Grotesk', system-ui, sans-serif;
+    --serif: 'Newsreader', Georgia, serif;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; height:100%; }
+  body{ font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  .mono{ font-family: var(--mono); font-feature-settings:"tnum" 1; letter-spacing:-0.01em; }
+
+  .reldot{ width:7px; height:7px; border-radius:50%; background:var(--ink-faint); flex:0 0 auto; }
+  .reldot.folge{ background:var(--accent); }
+  .reldot.verzweig{ background:var(--ink-soft); }
+  .reldot.vor{ background:var(--ink-ghost); }
+
+  /* ---- Vergleichs-Zelle: zwei Zettel untereinander ---- */
+  .uv-pair{ display:flex; flex-direction:column; gap:18px; padding:6px; }
+  .uv-cell{ position:relative; }
+  .uv-celltag{ position:absolute; top:10px; left:12px; z-index:5; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-ghost); }
+
+  /* ---- Mock-Lese-Rahmen ---- */
+  .uv-frame{ position:relative; height:218px; background:var(--paper); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .uv-paper{ position:absolute; left:0; top:0; bottom:0; width:62%; padding:30px 0 0 34px; }
+  .uv-zhead{ display:flex; align-items:flex-start; justify-content:space-between; padding-right:18px; }
+  .uv-zkw{ display:flex; flex-direction:column; gap:2px; }
+  .uv-zkwl{ font-size:8px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-ghost); }
+  .uv-zkwv{ font-size:11px; font-weight:600; color:var(--ink-soft); }
+  .uv-zaddr{ font-size:22px; font-weight:600; color:var(--ink); letter-spacing:-0.03em; line-height:.9; }
+  .uv-zbody{ display:flex; flex-direction:column; gap:9px; margin-top:24px; }
+  .uv-zbody span{ height:5px; border-radius:3px; background:var(--line-soft); display:block; }
+
+  /* gemeinsamer Dock-Anker rechts */
+  .uv-dock{ position:absolute; right:0; top:0; bottom:0; display:flex; align-items:center; }
+
+  /* ============ 1 · FESTE SPUR ============ */
+  .uv-spur{ right:26px; flex-direction:column; justify-content:center; }
+  .sp-node{ display:inline-flex; align-items:center; gap:7px; background:none; border:none; padding:3px 4px; cursor:pointer; color:var(--ink-faint); transition:color .14s; }
+  .sp-node:hover{ color:var(--accent-ink); }
+  .sp-node.cur{ cursor:default; }
+  .sp-node.ghost{ cursor:default; opacity:.45; }
+  .sp-addr{ font-size:11px; font-weight:600; }
+  .sp-node.cur .sp-addr{ color:var(--ink); font-size:12px; }
+  .sp-node.ghost .sp-addr{ color:var(--ink-ghost); }
+  .sp-tick{ width:7px; height:7px; border-radius:50%; border:1px dashed var(--ink-ghost); flex:0 0 auto; }
+  .sp-dotcur{ width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px var(--accent-wash); flex:0 0 auto; }
+  .sp-line{ width:1px; height:18px; background:var(--line); margin-left:7.5px; }
+  .sp-currow{ display:flex; align-items:center; gap:0; }
+  .sp-branches{ display:flex; flex-direction:column; gap:3px; align-items:flex-end; margin-right:6px; }
+  .sp-branch{ display:inline-flex; align-items:center; gap:5px; color:var(--ink-faint); }
+  .sp-baddr{ font-size:10px; font-weight:600; }
+  .sp-elbow{ width:8px; height:1px; background:var(--line); order:2; }
+
+  /* ============ 2 · KOMPASS ============ */
+  .uv-kompass{ right:30px; flex-direction:column; align-items:center; justify-content:center; gap:5px; }
+  .kp-arm{ display:inline-flex; align-items:center; gap:5px; color:var(--ink-faint); font-size:11px; transition:color .14s; cursor:pointer; }
+  .kp-arm:hover{ color:var(--accent-ink); }
+  .kp-arm.empty{ cursor:default; opacity:.4; }
+  .kp-k{ font-size:12px; color:var(--ink-ghost); }
+  .kp-addr{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
+  .kp-addr.dim{ color:var(--ink-ghost); }
+  .kp-mid{ display:flex; align-items:center; gap:10px; }
+  .kp-cur{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--accent-line); border-radius:9px; background:var(--accent-wash); }
+  .kp-dotcur{ width:7px; height:7px; border-radius:50%; background:var(--accent); flex:0 0 auto; }
+  .kp-curaddr{ font-size:13px; font-weight:600; color:var(--accent-ink); }
+  .kp-more{ font-size:9.5px; font-weight:700; color:var(--ink-ghost); letter-spacing:.05em; }
+
+  /* ============ 3 · REGISTER-LEISTE ============ */
+  .uv-leiste{ right:22px; }
+  .uv-leiste-inner, .uv-leiste{ flex-direction:column; align-items:stretch; justify-content:center; }
+  .ls-row{ display:flex; align-items:center; gap:12px; padding:6px 0; min-height:26px; }
+  .ls-row.cur{ border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft); margin:2px 0; }
+  .ls-label{ font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-ghost); width:82px; text-align:right; flex:0 0 auto; }
+  .ls-vals{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .ls-val{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:var(--ink-faint); font-family:var(--mono); }
+  .ls-val.cur{ color:var(--ink); font-size:13px; }
+  .ls-val.dim{ color:var(--ink-ghost); }
+  .ls-dotcur{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px var(--accent-wash); flex:0 0 auto; }
+  .ls-sep{ color:var(--ink-ghost); }
+
+  #root{ height:100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#2a3a5c" />
+    <rect x="18" y="30" width="40" height="40" rx="4" fill="#fff" />
+    <circle cx="74" cy="38" r="3" fill="#9aa6bd" />
+    <circle cx="74" cy="50" r="4" fill="#fff" />
+    <circle cx="74" cy="62" r="3" fill="#9aa6bd" />
+    <line x1="74" y1="41" x2="74" y2="47" stroke="#9aa6bd" stroke-width="1.5" />
+    <line x1="74" y1="53" x2="74" y2="59" stroke="#9aa6bd" stroke-width="1.5" />
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="umgebungs-varianten.jsx"></script>
+<script type="text/babel">
+  const { SpurPair, KompassPair, LeistePair } = window.UmgebungVarianten;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="umgebung" title="Umgebungs-Baum · Varianten" subtitle="Rechts angedockt, mit fester Grundform. Jede Variante zweimal: ein verzweigter Zettel (1a) und ein karger (2c) — die Form bleibt gleich, damit beim Wechsel nichts springt.">
+          <DCArtboard id="spur" label="1 · Feste Spur" width={520} height={500}><SpurPair /></DCArtboard>
+          <DCArtboard id="kompass" label="2 · Kompass" width={520} height={500}><KompassPair /></DCArtboard>
+          <DCArtboard id="leiste" label="3 · Register-Leiste" width={520} height={500}><LeistePair /></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
