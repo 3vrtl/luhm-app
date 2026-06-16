@@ -12,6 +12,9 @@ struct ZettelWindowView: View {
     @State private var highlightsFullHeight: Bool = false
     @State private var typingTimer: Timer? = nil
 
+    /// Custom cubic-bezier-ish spring for card transitions.
+    private static let cardTransitionAnimation = Animation.timingCurve(0.2, 0.7, 0.25, 1.0, duration: 0.34)
+
     private var currentZettel: Zettel? {
         zettelList.first(where: { $0.id == appState.focus })
     }
@@ -34,6 +37,9 @@ struct ZettelWindowView: View {
                 cardHeader
                 Divider().background(Color.lineColor.opacity(0.6))
                 cardBody
+                    .id(appState.focus)
+                    .transition(cardTransition)
+                relationApparat
                 Divider().background(Color.lineColor.opacity(0.4))
                 NavHintView(nav: nav, show: !appState.isTyping)
             }
@@ -205,31 +211,145 @@ struct ZettelWindowView: View {
         }
     }
 
+    // MARK: - Relation apparatus (Beziehungs-Apparat)
+
+    @ViewBuilder
+    private var relationApparat: some View {
+        if let z = currentZettel {
+            let entries = relationEntries(for: z)
+            if !entries.isEmpty {
+                VStack(spacing: 0) {
+                    Divider().background(Color.lineColor.opacity(0.25))
+                    HStack(spacing: 0) {
+                        ForEach(Array(entries.enumerated()), id: \.offset) { index, entry in
+                            if index > 0 {
+                                Text(" \u{00B7} ")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(Color.inkGhost.opacity(0.5))
+                            }
+                            Text("\(entry.label): ")
+                                .font(.system(size: 11))
+                                .foregroundStyle(Color.inkGhost)
+                            ForEach(Array(entry.ids.enumerated()), id: \.offset) { idIndex, addr in
+                                if idIndex > 0 {
+                                    Text(", ")
+                                        .font(.system(size: 11))
+                                        .foregroundStyle(Color.inkGhost.opacity(0.5))
+                                }
+                                Text(addr)
+                                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                    .foregroundStyle(Color.accentBlue)
+                                    .onTapGesture { navigate(to: addr) }
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 6)
+                }
+            }
+        }
+    }
+
+    private struct RelationEntry {
+        let label: String
+        let ids: [String]
+    }
+
+    private func relationEntries(for z: Zettel) -> [RelationEntry] {
+        var result: [RelationEntry] = []
+        if let vorg = z.vorgID, !vorg.isEmpty {
+            result.append(RelationEntry(label: "Vorg\u{00E4}nger", ids: [vorg]))
+        }
+        if !z.folgeIDs.isEmpty {
+            result.append(RelationEntry(label: "Folge", ids: z.folgeIDs))
+        }
+        if !z.verzweigIDs.isEmpty {
+            result.append(RelationEntry(label: "Verzweigung", ids: z.verzweigIDs))
+        }
+        if !z.verweisIDs.isEmpty {
+            result.append(RelationEntry(label: "Verweis", ids: z.verweisIDs))
+        }
+        return result
+    }
+
+    // MARK: - Directional card transition
+
+    /// Builds an asymmetric transition based on the current navDirection.
+    /// Insertion = where the new card comes FROM; removal = where the old card goes TO.
+    /// Opacity transitions between 0.3 (entering/exiting) and 1.0 (on-screen).
+    private var cardTransition: AnyTransition {
+        let distance: CGFloat = 22
+        let fade = AnyTransition.modifier(
+            active:   CardFadeModifier(opacity: 0.3),
+            identity: CardFadeModifier(opacity: 1.0)
+        )
+        switch appState.navDirection {
+        case .down:
+            return .asymmetric(
+                insertion: .offset(x: 0, y: distance).combined(with: fade),
+                removal:   .offset(x: 0, y: -distance).combined(with: fade)
+            )
+        case .up:
+            return .asymmetric(
+                insertion: .offset(x: 0, y: -distance).combined(with: fade),
+                removal:   .offset(x: 0, y: distance).combined(with: fade)
+            )
+        case .right:
+            return .asymmetric(
+                insertion: .offset(x: distance, y: 0).combined(with: fade),
+                removal:   .offset(x: -distance, y: 0).combined(with: fade)
+            )
+        case .left:
+            return .asymmetric(
+                insertion: .offset(x: -distance, y: 0).combined(with: fade),
+                removal:   .offset(x: distance, y: 0).combined(with: fade)
+            )
+        case .none:
+            return .opacity
+        }
+    }
+
     // MARK: - Navigation
 
+    /// Navigate without a directional animation (used by CmdK, graph, etc.).
     private func navigate(to id: String) {
         withAnimation(.easeInOut(duration: 0.15)) {
+            appState.navDirection = .none
             appState.focus = id
             appState.showCmdK = false
         }
     }
 
+    /// Navigate with a directional card slide.
+    private func navigateDirectional(to id: String, direction: NavDirection) {
+        appState.navDirection = direction
+        withAnimation(Self.cardTransitionAnimation) {
+            appState.focus = id
+        }
+        // Reset direction after animation completes so subsequent non-directional
+        // navigations (CmdK, graph tap) use a simple opacity fade.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.36) {
+            appState.navDirection = .none
+        }
+    }
+
     private func goUp() {
-        if let id = nav.up ?? nav.left ?? nav.parent { navigate(to: id) }
+        if let id = nav.up ?? nav.left ?? nav.parent { navigateDirectional(to: id, direction: .up) }
     }
 
     private func goDown() {
-        if let id = nav.down { navigate(to: id) }
+        if let id = nav.down { navigateDirectional(to: id, direction: .down) }
         else { createFolge() }
     }
 
     private func goBranch() {
-        if let id = nav.branches.first { navigate(to: id) }
+        if let id = nav.branches.first { navigateDirectional(to: id, direction: .right) }
         else { createVerzweig() }
     }
 
     private func goLeft() {
-        if let id = nav.left ?? nav.parent { navigate(to: id) }
+        if let id = nav.left ?? nav.parent { navigateDirectional(to: id, direction: .left) }
     }
 
     // MARK: - Creation
@@ -319,6 +439,15 @@ private struct TitleField: View {
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.inkMain)
         }
+    }
+}
+
+// MARK: - Card fade modifier (0.3 → 1.0 opacity for transitions)
+
+private struct CardFadeModifier: ViewModifier {
+    let opacity: Double
+    func body(content: Content) -> some View {
+        content.opacity(opacity)
     }
 }
 

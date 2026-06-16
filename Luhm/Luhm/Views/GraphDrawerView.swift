@@ -63,6 +63,7 @@ struct GraphNode: Identifiable {
     let id: String
     let label: String
     let isFocus: Bool
+    let isBranch: Bool
     var position: CGPoint
     var velocity: CGPoint = .zero
 }
@@ -102,32 +103,65 @@ struct GraphCanvasView: View {
                 for edge in edges {
                     guard let fromNode = nodeDict[edge.from],
                           let toNode = nodeDict[edge.to] else { continue }
-                    var path = Path()
-                    path.move(to: fromNode.position)
-                    path.addLine(to: toNode.position)
 
-                    let style: Color
+                    let edgeColor: Color
                     let lineWidth: CGFloat
                     let dash: [CGFloat]
                     switch edge.kind {
                     case .folge:
-                        style = .inkSoft
-                        lineWidth = 1.2
+                        edgeColor = .accentBlue.opacity(0.34)
+                        lineWidth = 1.6
                         dash = []
                     case .verzweig:
-                        style = .inkGhost
-                        lineWidth = 1.0
+                        edgeColor = .inkGhost
+                        lineWidth = 1.2
                         dash = []
                     case .verweis:
-                        style = .accentBlue.opacity(0.4)
-                        lineWidth = 0.8
-                        dash = [4, 3]
+                        edgeColor = .accentBlue.opacity(0.34)
+                        lineWidth = 1.2
+                        dash = [3, 3]
                     }
 
+                    // Shorten the line so it does not overlap the node circles
+                    let dx = toNode.position.x - fromNode.position.x
+                    let dy = toNode.position.y - fromNode.position.y
+                    let dist = max(sqrt(dx * dx + dy * dy), 1)
+                    let ux = dx / dist
+                    let uy = dy / dist
+                    let fromRadius: CGFloat = fromNode.isFocus ? 5 : (fromNode.isBranch ? 3 : 3.5)
+                    let toRadius: CGFloat = toNode.isFocus ? 5 : (toNode.isBranch ? 3 : 3.5)
+                    let p1 = CGPoint(x: fromNode.position.x + ux * fromRadius,
+                                     y: fromNode.position.y + uy * fromRadius)
+                    let p2 = CGPoint(x: toNode.position.x - ux * toRadius,
+                                     y: toNode.position.y - uy * toRadius)
+
+                    var linePath = Path()
+                    linePath.move(to: p1)
+                    linePath.addLine(to: p2)
+
                     if dash.isEmpty {
-                        context.stroke(path, with: .color(style), lineWidth: lineWidth)
+                        context.stroke(linePath, with: .color(edgeColor), lineWidth: lineWidth)
                     } else {
-                        context.stroke(path, with: .color(style), style: StrokeStyle(lineWidth: lineWidth, dash: dash))
+                        context.stroke(linePath, with: .color(edgeColor),
+                                       style: StrokeStyle(lineWidth: lineWidth, dash: dash))
+                    }
+
+                    // Arrowhead for folge edges
+                    if edge.kind == .folge {
+                        let arrowLen: CGFloat = 6
+                        let arrowAngle: CGFloat = .pi / 6
+                        let tip = p2
+                        let leftX = tip.x - arrowLen * cos(atan2(uy, ux) - arrowAngle)
+                        let leftY = tip.y - arrowLen * sin(atan2(uy, ux) - arrowAngle)
+                        let rightX = tip.x - arrowLen * cos(atan2(uy, ux) + arrowAngle)
+                        let rightY = tip.y - arrowLen * sin(atan2(uy, ux) + arrowAngle)
+
+                        var arrowPath = Path()
+                        arrowPath.move(to: tip)
+                        arrowPath.addLine(to: CGPoint(x: leftX, y: leftY))
+                        arrowPath.addLine(to: CGPoint(x: rightX, y: rightY))
+                        arrowPath.closeSubpath()
+                        context.fill(arrowPath, with: .color(edgeColor))
                     }
                 }
             }
@@ -136,8 +170,11 @@ struct GraphCanvasView: View {
                 ForEach(nodes) { node in
                     NodeView(node: node)
                         .position(node.position)
+                        .animation(.spring(duration: 0.35, bounce: 0.2), value: node.isFocus)
                         .onTapGesture {
-                            onNavigate(node.id)
+                            withAnimation(.spring(duration: 0.35, bounce: 0.2)) {
+                                onNavigate(node.id)
+                            }
                         }
                         .gesture(
                             DragGesture()
@@ -216,6 +253,9 @@ struct GraphCanvasView: View {
             }
         }
 
+        // Determine which nodes are branch targets
+        let branchTargetIDs = Set(graphEdges.filter { $0.kind == .verzweig }.map { $0.to })
+
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
         let allIDs = [focus] + Array(neighborIDs)
 
@@ -228,7 +268,8 @@ struct GraphCanvasView: View {
                 y: center.y + sin(angle) * radius
             )
             let label = id
-            graphNodes.append(GraphNode(id: id, label: label, isFocus: id == focus, position: pos))
+            graphNodes.append(GraphNode(id: id, label: label, isFocus: id == focus,
+                                        isBranch: branchTargetIDs.contains(id), position: pos))
         }
 
         nodes = graphNodes
@@ -329,21 +370,39 @@ struct GraphCanvasView: View {
 struct NodeView: View {
     let node: GraphNode
 
+    private var dotSize: CGFloat {
+        if node.isFocus { return 10 }
+        if node.isBranch { return 6 }
+        return 7
+    }
+
+    private var dotColor: Color {
+        node.isFocus ? .accentBlue : .inkGhost
+    }
+
     var body: some View {
-        VStack(spacing: 2) {
-            Circle()
-                .fill(node.isFocus ? Color.accentBlue : Color.inkSoft)
-                .frame(width: node.isFocus ? 14 : 10, height: node.isFocus ? 14 : 10)
-                .overlay {
+        VStack(spacing: 3) {
+            ZStack {
+                // Wash ring for the current/focus node
+                if node.isFocus {
                     Circle()
-                        .stroke(Color.paper, lineWidth: 2)
+                        .fill(Color.accentBlue.opacity(0.10))
+                        .frame(width: dotSize + 12, height: dotSize + 12)
+                    Circle()
+                        .stroke(Color.accentBlue.opacity(0.18), lineWidth: 1.5)
+                        .frame(width: dotSize + 12, height: dotSize + 12)
                 }
-                .shadow(color: node.isFocus ? Color.accentBlue.opacity(0.3) : .clear, radius: 4)
+                Circle()
+                    .fill(dotColor)
+                    .frame(width: dotSize, height: dotSize)
+            }
             Text(node.label)
-                .font(.system(size: 10, weight: node.isFocus ? .bold : .medium, design: .monospaced))
-                .foregroundStyle(node.isFocus ? Color.accentBlue : Color.inkSoft)
+                .font(.system(size: 10.5, design: .monospaced))
+                .foregroundStyle(node.isFocus ? Color.accentBlue : Color.inkGhost)
+                .lineLimit(1)
         }
-        .contentShape(Rectangle().size(width: 44, height: 44))
+        .frame(width: 44, height: 44)
+        .contentShape(Rectangle())
     }
 }
 
