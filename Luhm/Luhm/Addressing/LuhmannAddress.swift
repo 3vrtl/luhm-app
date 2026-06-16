@@ -158,10 +158,19 @@ func deeperChild(_ id: String) -> String {
     }
 }
 
+// MARK: - Namespace
+
+enum LuhmannAddress {
+    static func nextFolge(focus: String, existingIDs: Set<String>) -> String {
+        Luhm.nextFolge(focus: focus, existingIDs: existingIDs)
+    }
+    static func nextVerzweig(focus: String, existingIDs: Set<String>) -> String {
+        Luhm.nextVerzweig(focus: focus, existingIDs: existingIDs)
+    }
+}
+
 // MARK: - Next ID generators
 
-/// Compute the next folge ID for a given focus node.
-/// Folge = sequential child at the same depth level (append /N).
 func nextFolge(focus: String, existingIDs: Set<String>) -> String {
     // Folge children share the same parent prefix + /N
     // The focus node is at depth D. Its folge children are at depth D+1 via /N.

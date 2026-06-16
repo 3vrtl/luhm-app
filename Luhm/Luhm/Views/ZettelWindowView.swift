@@ -11,6 +11,7 @@ struct ZettelWindowView: View {
     @State private var graphFullHeight: Bool = false
     @State private var highlightsFullHeight: Bool = false
     @State private var typingTimer: Timer? = nil
+    @State private var exporter = MarkdownExporter()
 
     private var currentZettel: Zettel? {
         zettelList.first(where: { $0.id == appState.focus })
@@ -45,7 +46,9 @@ struct ZettelWindowView: View {
                     GraphDrawerView(
                         isPresented: $appState.showGraph,
                         isFullHeight: $graphFullHeight,
-                        focus: appState.focus
+                        focus: appState.focus,
+                        zettelList: zettelList,
+                        onNavigate: { id in navigate(to: id) }
                     )
                     .frame(maxHeight: graphFullHeight ? .infinity : 280)
                     .transition(.move(edge: .bottom))
@@ -58,7 +61,9 @@ struct ZettelWindowView: View {
                     Spacer()
                     HighlightsDrawerView(
                         isPresented: $appState.showHighlights,
-                        isFullHeight: $highlightsFullHeight
+                        isFullHeight: $highlightsFullHeight,
+                        currentZettelID: appState.focus,
+                        onAttach: { _ in }
                     )
                     .frame(maxHeight: highlightsFullHeight ? .infinity : 280)
                     .transition(.move(edge: .bottom))
@@ -280,6 +285,9 @@ struct ZettelWindowView: View {
         typingTimer?.invalidate()
         typingTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { _ in
             appState.isTyping = false
+            if let z = currentZettel {
+                try? exporter.exportOne(zettel: z)
+            }
         }
     }
 }

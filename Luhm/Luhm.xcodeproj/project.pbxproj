@@ -23,6 +23,7 @@
 		A1B2C3D4E5F6000000000046 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000023 /* SettingsView.swift */; };
 		A1B2C3D4E5F6000000000047 /* GraphDrawerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000024 /* GraphDrawerView.swift */; };
 		A1B2C3D4E5F6000000000048 /* HighlightsDrawerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000025 /* HighlightsDrawerView.swift */; };
+		A1B2C3D4E5F6000000000049 /* MarkdownExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000026 /* MarkdownExporter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		A1B2C3D4E5F6000000000023 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000024 /* GraphDrawerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDrawerView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000025 /* HighlightsDrawerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightsDrawerView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000026 /* MarkdownExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownExporter.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000060 /* Luhm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Luhm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -75,6 +77,7 @@
 				A1B2C3D4E5F6000000000005 /* Addressing */,
 				A1B2C3D4E5F6000000000006 /* Theme */,
 				A1B2C3D4E5F6000000000007 /* Views */,
+				A1B2C3D4E5F6000000000009 /* Services */,
 				A1B2C3D4E5F6000000000017 /* Assets.xcassets */,
 			);
 			path = Luhm;
@@ -117,6 +120,14 @@
 				A1B2C3D4E5F6000000000025 /* HighlightsDrawerView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6000000000009 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6000000000026 /* MarkdownExporter.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		A1B2C3D4E5F6000000000008 /* Products */ = {
@@ -211,6 +222,7 @@
 				A1B2C3D4E5F6000000000046 /* SettingsView.swift in Sources */,
 				A1B2C3D4E5F6000000000047 /* GraphDrawerView.swift in Sources */,
 				A1B2C3D4E5F6000000000048 /* HighlightsDrawerView.swift in Sources */,
+				A1B2C3D4E5F6000000000049 /* MarkdownExporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
