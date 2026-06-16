@@ -203,7 +203,8 @@ struct ZettelWindowView: View {
                     }
                 ),
                 font: appState.fontFamily.bodyFont,
-                placeholder: appState.focus == "1/1" ? "" : "…"
+                placeholder: appState.focus == "1/1" ? "" : "…",
+                onNavigateToLink: { address in navigate(to: address) }
             )
             .padding(.horizontal, 18)
             .padding(.vertical, 14)
