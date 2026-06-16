@@ -11,6 +11,7 @@ struct ZettelWindowView: View {
     @State private var graphFullHeight: Bool = false
     @State private var highlightsFullHeight: Bool = false
     @State private var typingTimer: Timer? = nil
+    @State private var nudgeOffset: CGFloat = 0
 
     /// Custom cubic-bezier-ish spring for card transitions.
     private static let cardTransitionAnimation = Animation.timingCurve(0.2, 0.7, 0.25, 1.0, duration: 0.34)
@@ -44,6 +45,7 @@ struct ZettelWindowView: View {
                 Divider().background(Color.lineColor.opacity(0.4))
                 NavHintView(nav: nav, show: !appState.isTyping)
             }
+            .offset(x: nudgeOffset)
 
             // Drawers (slide up from bottom)
             if appState.showGraph {
@@ -391,10 +393,28 @@ struct ZettelWindowView: View {
         navigate(to: addr)
     }
 
+    /// cardNudge: translateX oscillation 0 → -5 → +4 → -3 → +2 → 0
+    /// Duration: 0.36s total, cubic-bezier(.36,.07,.19,.97)
     private func nudge() {
         withAnimation(.default) { appState.nudging = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.38) {
             appState.nudging = false
+        }
+
+        let cardNudge = Animation.timingCurve(0.36, 0.07, 0.19, 0.97, duration: 0.072)
+        let steps: [(CGFloat, Double)] = [
+            (-5, 0.0),
+            ( 4, 0.072),
+            (-3, 0.144),
+            ( 2, 0.216),
+            ( 0, 0.288),
+        ]
+        for (offset, delay) in steps {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                withAnimation(cardNudge) {
+                    nudgeOffset = offset
+                }
+            }
         }
     }
 
