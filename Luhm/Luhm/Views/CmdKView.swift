@@ -27,8 +27,8 @@ struct CmdKView: View {
     private var commands: [CmdItem] {
         var list: [CmdItem] = []
         if !currentEmpty {
-            let folgeAddr = LuhmannAddress.nextFolge(focus: focus, existingIDs: existingIDs)
-            let verzweigAddr = LuhmannAddress.nextVerzweig(focus: focus, existingIDs: existingIDs)
+            let folgeAddr = nextFolge(focus: focus, existingIDs: existingIDs)
+            let verzweigAddr = nextVerzweig(focus: focus, existingIDs: existingIDs)
             list.append(CmdItem(id: "folge",    group: .neu,   icon: "arrow.down",         label: "Weiterschreiben", desc: "Reihe fortführen",  addr: folgeAddr,    kbd: "⌘↓", action: onCreateFolge))
             list.append(CmdItem(id: "verzweig", group: .neu,   icon: "arrow.turn.down.right", label: "Verzweigen",   desc: "neuer Abzweig",     addr: verzweigAddr, kbd: "⌘→", action: onCreateVerzweig))
         }
