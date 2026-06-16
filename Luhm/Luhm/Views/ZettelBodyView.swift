@@ -76,7 +76,9 @@ struct ZettelBodyView: View {
                 .font(font)
                 .foregroundStyle(Color.inkMain)
                 .environment(\.openURL, OpenURLAction { url in
-                    if url.scheme == "zettel", let address = url.host() {
+                    if url.scheme == "zettel",
+                       let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                       let address = components.queryItems?.first(where: { $0.name == "addr" })?.value {
                         onNavigateToLink?(address)
                         return .handled
                     }
@@ -104,7 +106,8 @@ struct ZettelBodyView: View {
             mention.font = .system(size: 13.2, design: .monospaced)
             mention.foregroundColor = .accentBlue
             mention.backgroundColor = Color.accentBlue.opacity(0.12)
-            if let url = URL(string: "zettel://\(address)") {
+            let encoded = address.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? address
+            if let url = URL(string: "zettel://link?addr=\(encoded)") {
                 mention.link = url
             }
             result.append(mention)
