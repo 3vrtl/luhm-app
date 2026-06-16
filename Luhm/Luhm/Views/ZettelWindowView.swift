@@ -39,6 +39,7 @@ struct ZettelWindowView: View {
                 cardBody
                     .id(appState.focus)
                     .transition(cardTransition)
+                    .clipped()
                 relationApparat
                 Divider().background(Color.lineColor.opacity(0.4))
                 NavHintView(nav: nav, show: !appState.isTyping)
