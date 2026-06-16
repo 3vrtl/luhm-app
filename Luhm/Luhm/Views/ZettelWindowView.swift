@@ -45,7 +45,9 @@ struct ZettelWindowView: View {
                     GraphDrawerView(
                         isPresented: $appState.showGraph,
                         isFullHeight: $graphFullHeight,
-                        focus: appState.focus
+                        focus: appState.focus,
+                        zettelList: zettelList,
+                        onNavigate: { id in navigate(to: id) }
                     )
                     .frame(maxHeight: graphFullHeight ? .infinity : 280)
                     .transition(.move(edge: .bottom))
