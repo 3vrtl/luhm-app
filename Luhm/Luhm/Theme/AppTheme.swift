@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+#endif
 
 // Warm paper colors (approximating oklch values from prototype)
 extension Color {
@@ -40,4 +43,14 @@ enum FontFamily: String, CaseIterable, Codable {
         case .mono:    .system(size: 14, weight: .regular, design: .monospaced)
         }
     }
+
+    #if os(macOS)
+    var nsFont: NSFont {
+        switch self {
+        case .grotesk: .systemFont(ofSize: 16, weight: .regular)
+        case .serif:   NSFont(name: "Georgia", size: 16) ?? .systemFont(ofSize: 16)
+        case .mono:    .monospacedSystemFont(ofSize: 14, weight: .regular)
+        }
+    }
+    #endif
 }

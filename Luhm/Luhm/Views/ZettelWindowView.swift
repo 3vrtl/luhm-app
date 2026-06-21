@@ -196,7 +196,7 @@ struct ZettelWindowView: View {
                         markTyping()
                     }
                 ),
-                font: appState.fontFamily.bodyFont,
+                fontFamily: appState.fontFamily,
                 placeholder: appState.focus == "1/1" ? "" : "…"
             )
             .padding(.horizontal, 18)
@@ -324,6 +324,7 @@ private struct TitleField: View {
                 .textFieldStyle(.plain)
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.inkMain)
+                .tint(Color.accentBlue)
         }
     }
 }
