@@ -47,12 +47,16 @@ struct PlainTextEditor: NSViewRepresentable {
         let textView = scrollView.documentView as! NSTextView
 
         textView.isRichText = false
+        textView.isGrammarCheckingEnabled = false
         textView.allowsUndo = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
         textView.isAutomaticDashSubstitutionEnabled = false
         textView.isAutomaticTextReplacementEnabled = false
         textView.isAutomaticSpellingCorrectionEnabled = false
         textView.isAutomaticLinkDetectionEnabled = false
+        textView.isAutomaticDataDetectionEnabled = false
+        textView.isAutomaticTextCompletionEnabled = false
+        textView.smartInsertDeleteEnabled = false
 
         textView.insertionPointColor = NSColor(Color.accentBlue)
         textView.textColor = NSColor(Color.inkMain)

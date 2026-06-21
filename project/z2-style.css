@@ -111,7 +111,8 @@
   .z2-sheet:empty:before{ content: attr(data-placeholder); color: var(--ink-ghost); }
   .z2-sheet::-webkit-scrollbar{ width:8px; }
   .z2-sheet::-webkit-scrollbar-thumb{ background: var(--line); border-radius:99px; }
-  .z2-sheet div{ min-height:28px; }
+  .z2-sheet div, .z2-sheet h1, .z2-sheet h2, .z2-sheet h3, .z2-sheet h4, .z2-sheet h5, .z2-sheet h6{ min-height:28px; font-size:inherit; font-weight:inherit; line-height:inherit; margin:0; }
+  .z2-sheet *{ caret-color: var(--accent); }
 
   /* @-Verweismarke im Text */
   .atlink{

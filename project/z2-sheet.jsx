@@ -37,7 +37,7 @@ function serializeNode(node) {
   if (nn === "B" || nn === "STRONG" || /^(bold|[6-9]00)$/.test(cs.fontWeight || "")) return inner ? "**" + inner + "**" : "";
   if (nn === "I" || nn === "EM" || cs.fontStyle === "italic") return inner ? "*" + inner + "*" : "";
   if (nn === "U" || (cs.textDecoration || "").includes("underline")) return inner ? "__" + inner + "__" : "";
-  if (nn === "DIV" || nn === "P") return "\n" + inner;
+  if (nn === "DIV" || nn === "P" || /^H[1-6]$/.test(nn)) return "\n" + inner;
   return inner;
 }
 function serialize(root) {
@@ -104,6 +104,21 @@ function Sheet({ noteId, text, notes, onChange, onNavigate, onSpill, onTop, plac
   }, [noteId]); // eslint-disable-line
 
   const emit = () => { if (onChange) onChange(serialize(ref.current)); };
+
+  const stripHeadings = () => {
+    const el = ref.current;
+    if (!el) return;
+    const headings = el.querySelectorAll("h1, h2, h3, h4, h5, h6");
+    if (!headings.length) return;
+    const sel = window.getSelection();
+    const savedRange = sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    headings.forEach((h) => {
+      const div = document.createElement("div");
+      while (h.firstChild) div.appendChild(h.firstChild);
+      h.parentNode.replaceChild(div, h);
+    });
+    if (savedRange) { try { sel.removeAllRanges(); sel.addRange(savedRange); } catch (e) {} }
+  };
 
   // @-Trigger: rückwärts vom Cursor im aktuellen Textknoten ein "@wort" suchen
   const detectAt = () => {
@@ -182,7 +197,7 @@ function Sheet({ noteId, text, notes, onChange, onNavigate, onSpill, onTop, plac
         suppressContentEditableWarning
         spellCheck={false}
         data-placeholder={placeholder || ""}
-        onInput={() => { emit(); detectAt(); setFmt(null); }}
+        onInput={() => { stripHeadings(); emit(); detectAt(); setFmt(null); }}
         onKeyUp={() => { detectAt(); updateSel(); }}
         onKeyDown={onKeyDown}
         onMouseUp={() => { detectAt(); updateSel(); }}
